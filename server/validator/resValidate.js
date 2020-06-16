@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 
 exports.runValidation = (req, res, next) => {
   //next here is the main middleware that will be executed and sent to @ROUTER
-  const errors = validationResult(req); //error will be checked
+  const errors = validationResult(req); //error will be checked @ validate
   if (!errors.isEmpty()) {
     return res.status(442).json({
       //442 means recognized input but its incorrect

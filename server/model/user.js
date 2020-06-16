@@ -57,8 +57,9 @@ user_Schema
 user_Schema.methods = {
   //Authenticate was created to compare the user login password if it marge with the one in the database
   authenticate: function (plainText) {
-    return this.encryptPassword(plainText) === this.user_Password;
+    return this.encryptPassword(plainText) === this.user_Password; // this returns true/ false @controller
   },
+  //crypto will encrypt the password provided
   encryptPassword: function (password) {
     if (!password) return "";
     try {
@@ -70,6 +71,7 @@ user_Schema.methods = {
       return "";
     }
   },
+  //salt generator
   makeSalt: function () {
     return Math.round(new Date().valueOf() * Math.random()) + "";
   },
