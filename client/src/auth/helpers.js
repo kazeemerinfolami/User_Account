@@ -43,10 +43,16 @@ export const cookieChecked = () => {
     const cookieCheck = getCookie("token");
     if (cookieCheck) {
       if (localStorage.getItem("user")) {
-        return JSON.perse(localStorage.getItem("user"));
+        return JSON.parse(localStorage.getItem("user"));
       } else {
         return false;
       }
     }
   }
+};
+
+export const signOut = (next) => {
+  removeCookie("token");
+  removeLocalStorage("user");
+  next();
 };

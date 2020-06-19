@@ -3,7 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import Layout from "../core/Layout";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { cookie } from "./helpers";
+import { cookie, cookieChecked } from "./helpers";
 import "react-toastify/dist/ReactToastify.min.css";
 
 const Signin = () => {
@@ -80,7 +80,7 @@ const Signin = () => {
     <Layout>
       <div className="col-md-6 offset-md-3">
         <ToastContainer />
-        {/* {cookieChecked() ? <Redirect to="/" /> : null} */}
+        {cookieChecked() ? <Redirect to="/" /> : null}
         <h1 className="p-5 text-center">Signin</h1>
         {signinForm()}
       </div>

@@ -49,7 +49,7 @@ const Activate = ({ match }) => {
           Hey {name}, Click on the button to activate your account
         </h1>
         <button className="btn btn-outline-primary" onClick={clickSubmit}>
-          Activate Account
+          SignIn
         </button>
       </div>
     );
