@@ -4,12 +4,6 @@ const crypto = require("crypto");
 //schema
 const user_Schema = new mongoose.Schema(
   {
-    nickName: {
-      type: String,
-      trim: true,
-      required: true,
-      unique: true,
-    },
     name: {
       type: String,
       trim: true,

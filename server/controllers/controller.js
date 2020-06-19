@@ -43,7 +43,7 @@ const user = require("../model/user");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.signup = (req, res) => {
-  const { nickName, name, email, password } = req.body;
+  const { name, email, password } = req.body;
   //if signup email is found in the dataBase send err
   //"exec" - execute is gotten from mongodb
   User.findOne({ email }).exec((err, user) => {
@@ -54,7 +54,7 @@ exports.signup = (req, res) => {
     } //else
     //we generate a token by add the user information, where user information, secretKey, and expire date will be decoded
     const token = jwt.sign(
-      { nickName, name, email, password },
+      { name, email, password },
       process.env.JWT_ACCOUNT_ACTIVATION,
       { expiresIn: "10m" }
     );
@@ -106,10 +106,9 @@ exports.accountActivated = (req, res) => {
           });
         } // and if no err, the user can be saved to our dataBase
         //this will extract the user information that was decoded in jwt token so it can be saved to the dataBase
-        const { nickName, name, email, password } = jwt.decode(token);
+        const { name, email, password } = jwt.decode(token);
         //dataBase
         const user = new User({
-          nickName,
           name,
           email,
           password,
@@ -191,11 +190,11 @@ exports.signIn = (req, res) => {
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    const { _id, nickName, name, role } = user; //what will be gotten from the database then sent to the frontend
+    const { _id, name, role } = user; //what will be gotten from the database then sent to the frontend
 
     return res.json({
       token,
-      user: { _id, nickName, name, role },
+      user: { _id, name, role },
     });
   });
 };

@@ -2,7 +2,6 @@ const { check } = require("express-validator");
 //validator to make sure the client/user input a correct info before getting to the controller
 
 exports.userSignupValidator = [
-  check("nickName").not().isEmpty().withMessage("UniqueName required"),
   check("name").not().isEmpty().withMessage("Name required"),
   check("email").isEmail().withMessage("Valid Email required"),
   check("password")
