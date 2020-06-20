@@ -34,7 +34,7 @@ const Layout = ({ children, match, history }) => {
             <Link
               to="/signup"
               className=" nav-link"
-              style={isActive("/signup")}
+              style={cookieChecked("/signup")}
             >
               Signup
             </Link>
@@ -42,9 +42,9 @@ const Layout = ({ children, match, history }) => {
         </Fragment>
       )}
 
-      {cookieChecked() && (
+      {cookieChecked() && cookieChecked().role === "admin" && (
         <li className="nav-item">
-          <span
+          <li
             className="nav-link"
             style={{
               cursor: "pointer",
@@ -52,8 +52,27 @@ const Layout = ({ children, match, history }) => {
               backgroundColor: "#24282A",
             }}
           >
-            {cookieChecked().name}
-          </span>
+            <Link style={cookieChecked("/admin")} to="/admin">
+              {cookieChecked().name}
+            </Link>
+          </li>
+        </li>
+      )}
+
+      {cookieChecked() && cookieChecked().role === "subscriber" && (
+        <li className="nav-item">
+          <li
+            className="nav-link"
+            style={{
+              cursor: "pointer",
+              color: "#CACE9F",
+              backgroundColor: "#24282A",
+            }}
+          >
+            <Link style={cookieChecked("/private")} to="/private">
+              {cookieChecked().name}
+            </Link>
+          </li>
         </li>
       )}
 

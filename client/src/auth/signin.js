@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { cookie, cookieChecked } from "./helpers";
 import "react-toastify/dist/ReactToastify.min.css";
 
-const Signin = () => {
+const Signin = ({ history }) => {
   const [values, setValues] = useState({
     email: "erinfolasmikazeem@gmail.com",
     password: "kkkzzz",
@@ -36,7 +36,10 @@ const Signin = () => {
             password: "",
             buttonText: "submitted",
           });
-          toast.success(`Hey ${response.data.user.name}, Welcome Back!`);
+          //toast.success(`Hey ${response.data.user.name}, Welcome Back!`);
+          cookieChecked() && cookieChecked().role === "admin"
+            ? history.push("/admin")
+            : history.push("/private");
         });
       })
       .catch((error) => {
