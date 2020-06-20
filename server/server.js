@@ -1,5 +1,6 @@
 const express = require("express");
 const router = require("./router/router");
+const userRouter = require("./router/user");
 const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -31,6 +32,7 @@ app.use(cors()); //<= this allows all origin? ports
 // }
 
 app.use("/api", router);
+app.use("/api", userRouter);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
