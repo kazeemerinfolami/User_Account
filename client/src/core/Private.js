@@ -13,7 +13,7 @@ const Private = ({ history }) => {
     name: "",
     email: "",
     password: "",
-    buttonText: "submit",
+    buttonText: "update",
   });
   //to get user/ client info to be automatically visible after a user login and visit him profile
   const token = getCookie("token");
@@ -35,10 +35,10 @@ const Private = ({ history }) => {
         setValues({ ...values, role, name, email });
       })
       .catch((error) => {
-        console.log("private profile error", error.response.date.error);
-        if (error.response.status === 400) {
+        console.log("private profile error", error.response.data.error);
+        if (error.response.status === 401) {
           signOut(() => {
-            history.pushState("/");
+            history.push("/");
           });
         }
       });
@@ -47,28 +47,29 @@ const Private = ({ history }) => {
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
-  };
+  }; // where client can make an update ini is account profile
   const clickSubmit = (event) => {
     event.preventDefault();
-    setValues({ ...values, buttonText: "submitting" });
+    setValues({ ...values, buttonText: "updating" });
     axios({
-      method: "POST",
-      url: `${process.env.REACT_APP_API}/signup`,
-      data: { name, email, password },
+      method: "PUT",
+      url: `${process.env.REACT_APP_API}/user/update`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: { name, password },
     })
       .then((response) => {
+        console.log("private profile update", response);
         setValues({
           ...values,
-          name: "",
-          email: "",
-          password: "",
-          buttonText: "submitted",
+          buttonText: "updated",
         });
-        toast.success(response.data.message);
+        toast.success("Profile updated successfully");
       })
       .catch((error) => {
-        console.log("Signup Error", error.response.data);
-        setValues({ ...values, buttonText: "submit" });
+        console.log("private, profile update Error", error.response.data.error);
+        setValues({ ...values, buttonText: "update" });
         toast.error(error.response.data.error);
       });
   };
@@ -82,6 +83,7 @@ const Private = ({ history }) => {
             defaultValue={role}
             type="text"
             className="form-control"
+            disabled
           ></input>
         </div>
         <div className="form-group">
@@ -99,6 +101,7 @@ const Private = ({ history }) => {
             defaultValue={email}
             type="email"
             className="form-control"
+            disabled
           ></input>
         </div>
         <div className="form-group">
@@ -108,6 +111,7 @@ const Private = ({ history }) => {
             value={password}
             type="password"
             className="form-control"
+            placeholder="password must be 8 characters long"
           ></input>
         </div>
         <div>
