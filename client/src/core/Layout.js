@@ -60,19 +60,22 @@ const Layout = ({ children, match, history }) => {
       )}
 
       {cookieChecked() && cookieChecked().role === "subscriber" && (
-        <li className="nav-item">
-          <li
-            className="nav-link"
-            style={{
-              cursor: "pointer",
-              color: "#CACE9F",
-              backgroundColor: "#24282A",
-            }}
-          >
-            <Link style={cookieChecked("/private")} to="/private">
-              {cookieChecked().name}
-            </Link>
-          </li>
+        <li
+          className="nav-item nav-link"
+          style={{
+            cursor: "pointer",
+            color: "#CACE9F",
+            backgroundColor: "#24282A",
+          }}
+        >
+          {/* <li
+            className=""
+            
+          > */}
+          <Link style={cookieChecked("/private")} to="/private">
+            {cookieChecked().name}
+          </Link>
+          {/* </li> */}
         </li>
       )}
 

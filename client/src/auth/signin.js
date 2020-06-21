@@ -8,8 +8,8 @@ import "react-toastify/dist/ReactToastify.min.css";
 
 const Signin = ({ history }) => {
   const [values, setValues] = useState({
-    email: "erinfolasmikazeem@gmail.com",
-    password: "kkkzzz",
+    email: "erinfolamibolaji2010@gmail.com",
+    password: "kazeem2010",
     buttonText: "submit",
   });
   const { name, email, password, buttonText } = values;
@@ -36,7 +36,8 @@ const Signin = ({ history }) => {
             password: "",
             buttonText: "submitted",
           });
-          //toast.success(`Hey ${response.data.user.name}, Welcome Back!`);
+          //toast.success(`Hey ${response.data.user.name}, Welcome Back!`)
+
           cookieChecked() && cookieChecked().role === "admin"
             ? history.push("/admin")
             : history.push("/private");
