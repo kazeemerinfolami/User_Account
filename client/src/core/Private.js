@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
-import { cookieChecked, getCookie, signOut } from "../auth/helpers";
+import { cookieChecked, getCookie, signOut, updateUser } from "../auth/helpers";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 
@@ -47,7 +47,9 @@ const Private = ({ history }) => {
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
-  }; // where client can make an update ini is account profile
+  };
+
+  // where client can make an update on his account profile and when updated the details will be update at the cookies @src/auth/helper =updateUser
   const clickSubmit = (event) => {
     event.preventDefault();
     setValues({ ...values, buttonText: "updating" });
@@ -61,14 +63,18 @@ const Private = ({ history }) => {
     })
       .then((response) => {
         console.log("private profile update", response);
-        setValues({
-          ...values,
-          buttonText: "updated",
+        updateUser(response, () => {
+          //updates the localStorage when profile is changed
+          setValues({
+            ...values,
+            buttonText: "updated",
+          });
+          toast.success("Profile updated successfully");
         });
-        toast.success("Profile updated successfully");
       })
       .catch((error) => {
-        console.log("private, profile update Error", error.response.data.error);
+        //"private, profile update Error",
+        console.log(error.response.data.error);
         setValues({ ...values, buttonText: "update" });
         toast.error(error.response.data.error);
       });
@@ -128,7 +134,7 @@ const Private = ({ history }) => {
       <div className=" col-md-6 offset-md-3">
         <ToastContainer />
         <h1 className="pt-5 text-center">Private</h1>
-        <p className="p-5 text-center">Profile update</p>
+        <p className="lead text-center">Profile update</p>
         {updateForm()}
       </div>
     </Layout>
