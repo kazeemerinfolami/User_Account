@@ -41,24 +41,22 @@ const Layout = ({ children, match, history }) => {
           </li>
         </Fragment>
       )}
-
       {cookieChecked() && cookieChecked().role === "admin" && (
-        <li className="nav-item">
+        <div className="nav-item">
           <li
-            className="nav-link"
             style={{
               cursor: "pointer",
               color: "#CACE9F",
               backgroundColor: "#24282A",
             }}
           >
-            <Link style={cookieChecked("/admin")} to="/admin">
+            <Link className="nav-link" style={isActive("/admin")} to="/admin">
               {cookieChecked().name}
             </Link>
           </li>
-        </li>
+        </div>
       )}
-
+      {/* the Link was changed from cookieChecked to style={isActive("/admin")} */}
       {cookieChecked() && cookieChecked().role === "subscriber" && (
         <li
           className="nav-item nav-link"
@@ -72,13 +70,12 @@ const Layout = ({ children, match, history }) => {
             className=""
             
           > */}
-          <Link style={cookieChecked("/private")} to="/private">
+          <Link style={isActive("/private")} to="/private">
             {cookieChecked().name}
           </Link>
           {/* </li> */}
         </li>
       )}
-
       {cookieChecked() && (
         <li className="nav-item">
           {/* <Link to="/signin" className=" nav-link" style={isActive("/signin")}> */}

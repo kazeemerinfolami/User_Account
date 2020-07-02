@@ -36,8 +36,10 @@ const User = require("../model/user");
 // user signup with email verification, if verified, user data will be created in the dataBase and directed to the UI signin page
 //require jwt for generating user token..
 const jwt = require("jsonwebtoken");
+const expressJWT = require("express-jwt");
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
+const nodeMailer = require("nodemailer");
 const user = require("../model/user");
 //set the sendGrid apiKey
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -69,22 +71,44 @@ exports.signup = (req, res) => {
             <p>This email may contain sensitive information</p>
             `,
     }; //this will send a verification email to the user
-    sgMail
-      .send(emailMessage)
-      .then(() => {
-        //if no err
-        return res.json({
-          message: `email sent to ${email}, follow the instructions on your email`,
-        });
-      }) // if err
-      .catch((err) => {
+
+    const transport = nodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.CREATORPASS,
+      },
+    });
+    transport.sendMail(emailMessage, function (error, info) {
+      if (error) {
         console.log("send email verification err", err);
         return json({
           message: err.message,
         });
-      });
+      } else {
+        return res.json({
+          message: `email sent to ${email}, follow the instructions on your email`,
+        });
+      }
+    });
+
+    //  sgMail
+    // //   .send(emailMessage)
+    // //   .then(() => {
+    // //     //if no err
+    // //     return res.json({
+    // //       message: `email sent to ${email}, follow the instructions on your email`,
+    // //     });
+    // //   }) // if err
+    // //   .catch((err) => {
+    // //     console.log("send email verification err", err);
+    // //     return json({
+    // //       message: err.message,
+    // //     });
+    // //   });
   });
 };
+
 //now we make sure our signup user has received a mail and has passed the verification stage so the user can be saved in the dataBase
 
 //created "account_activated" to @route for , when a user has gotten verification mail and then clicked on, they can be directed/ get a confirmation
@@ -145,20 +169,39 @@ exports.accountActivated = (req, res) => {
                       <p>This email may contain sensitive information</p>
                       `,
           };
-          sgMail
-            .send(userMessage)
-            .then(() => {
-              //if no err
-              return res.json({
-                message: "signup success. Please signIn",
-              });
-            })
-            .catch((err) => {
-              console.log("error saving the user in dataBase", err);
+          const transport = nodeMailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL_FROM,
+              pass: process.env.CREATORPASS,
+            },
+          });
+          transport.sendMail(userMessage, function (error, info) {
+            if (error) {
+              console.log("send email verification err", err);
               return json({
                 message: err.message,
               });
-            });
+            } else {
+              return res.json({
+                message: `email sent to ${email}, follow the instructions on your email`,
+              });
+            }
+          });
+          // sgMail
+          //   .send(userMessage)
+          //   .then(() => {
+          //     //if no err
+          //     return res.json({
+          //       message: "signup success. Please signIn",
+          //     });
+          //   })
+          //   .catch((err) => {
+          //     console.log("error saving the user in dataBase", err);
+          //     return json({
+          //       message: err.message,
+          //     });
+          //   });
         });
       }
     ); // if a user tries to signIn/ signup without passing the mail authentication/ verified
@@ -196,5 +239,28 @@ exports.signIn = (req, res) => {
       token,
       user: { _id, name, role },
     });
+  });
+};
+//makes only the user/ logged in client access his account even when typed on the url
+exports.requireSignIn = expressJWT({
+  secret: process.env.JWT_SECRET, //middleWare validates every token request
+});
+
+//creating a middleware for the admin, to limit the subscribers from updating son data
+
+exports.adminMiddleware = (req, res, next) => {
+  User.findById({ _id: req.user._id }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found",
+      });
+    }
+    if (user.role != "admin") {
+      return res.status(400).json({
+        error: "Admin resource. Access denied",
+      });
+    }
+    req.profile = user;
+    next();
   });
 };

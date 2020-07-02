@@ -28,6 +28,7 @@ const Signin = ({ history }) => {
       .then((response) => {
         cookie(response, () => {
           console.log("signin successful");
+          //toast.success(`Hey ${response.data.user.name}, Welcome Back!`);
           setValues({
             //save the response/ user information(userName & token) in local storage/ cookie.
             ...values,
@@ -36,7 +37,7 @@ const Signin = ({ history }) => {
             password: "",
             buttonText: "submitted",
           });
-          //toast.success(`Hey ${response.data.user.name}, Welcome Back!`)
+          toast.success(`Hey ${response.data.user.name}, Welcome Back!`);
 
           cookieChecked() && cookieChecked().role === "admin"
             ? history.push("/admin")
@@ -85,7 +86,7 @@ const Signin = ({ history }) => {
       <div className="col-md-6 offset-md-3">
         <ToastContainer />
         {cookieChecked() ? <Redirect to="/" /> : null}
-        <h1 className="p-5 text-center">Signin</h1>
+        <h1 className="p-5 text-center">signin</h1>
         {signinForm()}
       </div>
     </Layout>
