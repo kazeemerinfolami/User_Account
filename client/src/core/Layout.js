@@ -59,7 +59,7 @@ const Layout = ({ children, match, history }) => {
       {/* the Link was changed from cookieChecked to style={isActive("/admin")} */}
       {cookieChecked() && cookieChecked().role === "subscriber" && (
         <li
-          className="nav-item nav-link"
+          className="nav-item"
           style={{
             cursor: "pointer",
             color: "#CACE9F",
@@ -70,7 +70,7 @@ const Layout = ({ children, match, history }) => {
             className=""
             
           > */}
-          <Link style={isActive("/private")} to="/private">
+          <Link className="nav-link" style={isActive("/private")} to="/private">
             {cookieChecked().name}
           </Link>
           {/* </li> */}
