@@ -36,11 +36,13 @@ const User = require("../model/user");
 // user signup with email verification, if verified, user data will be created in the dataBase and directed to the UI signin page
 //require jwt for generating user token..
 const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 const expressJWT = require("express-jwt");
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
 const nodeMailer = require("nodemailer");
 const user = require("../model/user");
+const { forgotPasswordValidator } = require("../validator/validate");
 //set the sendGrid apiKey
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -184,7 +186,7 @@ exports.accountActivated = (req, res) => {
               });
             } else {
               return res.json({
-                message: `email sent to ${email}, follow the instructions on your email`,
+                message: `Welcome ${name}, it's a Big world, enjoy the moment`,
               });
             }
           });
@@ -263,4 +265,101 @@ exports.adminMiddleware = (req, res, next) => {
     req.profile = user;
     next();
   });
+};
+//forgotPassword, resetPassword;
+
+exports.forgotPassword = (req, res) => {
+  const { email } = req.body;
+  User.findOne({ email }, (err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User with that email does not exist",
+      });
+    }
+    const resetToken = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_RESET_PASSWORD,
+      {
+        expiresIn: "10m",
+      }
+    );
+    //create where the password reset link email will be sent
+    const passwordResetMessage = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: `Password reset link`,
+      html: `<h2><i>Please ${name} use the following link to reset your password</i></h2>
+            <p>${process.env.CLIENT_URL}/auth/password/reset/${resetToken}</p>
+            <hr />
+            <p>This email may contain sensitive information</p>
+            `,
+    };
+    const transport = nodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.CREATORPASS,
+      },
+    });
+    return user.updateOne({ reset_Password_link: token }, (err, success) => {
+      if (err) {
+        console.log("reset password link error");
+        return res.status(400).json({
+          error: "Database connection error on user password request",
+        });
+      } else {
+        transport.sendMail(passwordResetMessage, function (error, info) {
+          if (error) {
+            console.log("send email verification err", err);
+            return json({
+              message: err.message,
+            });
+          } else {
+            return res.json({
+              message: `reset password token has been sent to ${email}, follow the instructions on your email`,
+            });
+          }
+        });
+      }
+    });
+    //this will send a password reset token email to the user
+  });
+};
+exports.resetPassword = (req, res) => {
+  const { reset_Password_link, newPassword } = req.body;
+  if (reset_Password_link) {
+    jwt.verify(reset_Password_link, process.env.JWT_RESET_PASSWORD, function (
+      err,
+      decoded
+    ) {
+      if (err) {
+        return res.status(400).json({
+          error: "Expired link, try again",
+        });
+      }
+
+      User.findOne({ reset_Password_link }, (err, user) => {
+        if (err || !user) {
+          return res.status(400).json({
+            error: "something went wrong try again",
+          });
+        }
+        const updatedFields = {
+          password: newPassword,
+          reset_Password_link: "",
+        };
+        user = _.extend(user, updatedFields);
+        user.save((err, result) => {
+          if (err) {
+            return res.status(400).json({
+              error: "error resetting your password",
+            });
+          }
+          res.json({
+            message: "password changed",
+          });
+        });
+      });
+    });
+  }
 };

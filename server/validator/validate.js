@@ -16,3 +16,21 @@ exports.userSignInValidator = [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
 ];
+
+//creatin a password recovery mail, where the client can get a recovery mail
+//then this was made a middleware at the signup router
+exports.forgotPasswordValidator = [
+  check("email")
+    .not()
+    .isEmail() //to make sure that the email session is not empty
+    .isEmail()
+    .withMessage("Valid Email required"),
+];
+// for password reset then this was made a middleware at the signup router
+exports.resetPasswordValidator = [
+  check("newPassword")
+    .not()
+    .isEmail() //to make sure that the email session is not empty
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long"),
+];
